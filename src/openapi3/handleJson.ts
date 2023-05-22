@@ -201,7 +201,9 @@ export default async function (
     const putOperation = pathItem.put;
     const patchOperation = pathItem.patch;
     const deleteOperation = pathItem.delete;
-    const pathCollection = document.paths[`/${name}`];
+    const pathCollection =
+      document.paths[`/${name}`] ??
+      document.paths[path.split("/").slice(0, -1).join("/")];
     const listOperation = pathCollection && pathCollection.get;
     const createOperation = pathCollection && pathCollection.post;
     resource.operations = [
