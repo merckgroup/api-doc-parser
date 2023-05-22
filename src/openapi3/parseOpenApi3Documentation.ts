@@ -1,4 +1,5 @@
 import { Api } from "../Api.js";
+import { type RequestInitExtended } from "../hydra/types.js";
 import handleJson, { removeTrailingSlash } from "./handleJson.js";
 import type { OpenAPIV3 } from "openapi-types";
 
@@ -9,10 +10,17 @@ export interface ParsedOpenApi3Documentation {
 }
 
 export default function parseOpenApi3Documentation(
-  entrypointUrl: string
+  entrypointUrl: string,
+  options: RequestInitExtended = {}
 ): Promise<ParsedOpenApi3Documentation> {
   entrypointUrl = removeTrailingSlash(entrypointUrl);
-  return fetch(entrypointUrl)
+  return fetch(entrypointUrl, {
+    ...options,
+    headers:
+      typeof options.headers === "function"
+        ? options.headers()
+        : options.headers,
+  })
     .then((res) => Promise.all([res, res.json()]))
     .then(
       ([res, response]: [res: Response, response: OpenAPIV3.Document]) => {
